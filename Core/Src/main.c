@@ -51,6 +51,7 @@
 
 /* USER CODE BEGIN PV */
 char buffer[20]={0};
+char who[64]={0};
 uint8_t button=0;
 uint8_t data_buff[64]={0};
 static int16_t x=0,y=0,z=0;
@@ -66,18 +67,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/*int __io_putchar(int ch)
-{
-  if (ch == '\n') {
-    __io_putchar('\r');
-  }
-
-  HAL_UART_Transmit(&huart2, (uint8_t*)&ch, 1, HAL_MAX_DELAY);
-
-  return 1;
-}
-*/
-
 void mpu6050_read(uint8_t address, uint8_t *dest, uint8_t num){
 	HAL_I2C_Mem_Read(&hi2c1, MPU6050_I2C_ADDRESS , address, 1,dest , num, HAL_MAX_DELAY);
 }
@@ -153,13 +142,16 @@ int main(void)
   uint8_t who_am_i=0;
   	mpu6050_read(MPU6050_WHO_AM_I, &who_am_i ,1);
     if (who_am_i == 0x68) {
-      // printf("Found\n");
+    	HAL_UART_Transmit(&huart2,(uint8_t *)"Found", 5,100);
       } else {
-      // printf("Error:(0x%02X)\n", who_am_i);
+    	HAL_UART_Transmit(&huart2,(uint8_t *)"Error", 5,100);
+
       }
+   // HAL_UART_Transmit_IT(&huart2,(uint8_t*) who, sizeof(who));
+
     mpu6050_write(MPU6050_PWR_MGMT_1, MPU6050_PWR_MGMT_1_WAKE);
 
-    mpu6050_write(MPU6050_SMPRT_DIV, 0x07);
+    mpu6050_write(MPU6050_SMPRT_DIV, MPU6050_SMPRT_DIV_VALUE);
 
     mpu6050_write(MPU6050_CONFIG, MPU6050_CONFIG_ACCEL_XOUT_L|MPU6050_CONFIG_ACCEL_YOUT_L|MPU6050_CONFIG_ACCEL_ZOUT_L);
 
